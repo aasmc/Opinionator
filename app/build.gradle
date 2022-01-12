@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "ru.aasmc.opinionator"
@@ -30,7 +30,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        freeCompilerArgs += "-Xallow-jvm-ir-dependencies"
         jvmTarget = '1.8'
         useIR = true
     }
@@ -38,15 +37,15 @@ android {
         compose true
 
         // Disable unused AGP features
-        buildConfig false
-        aidl false
-        renderScript false
-        resValues false
-        shaders false
+//        buildConfig false
+//        aidl false
+//        renderScript false
+//        resValues false
+//        shaders false
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-        kotlinCompilerVersion '1.6.0'
+        kotlinCompilerVersion '1.5.31'
     }
     packagingOptions {
         resources {
