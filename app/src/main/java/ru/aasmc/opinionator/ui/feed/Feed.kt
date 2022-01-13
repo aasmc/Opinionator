@@ -1,7 +1,9 @@
 package ru.aasmc.opinionator.ui.feed
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,17 +33,33 @@ fun FeedScreen() {
     Feed()
 }
 
+enum class FeedScreenShowing {
+    Loading,
+    Feed
+}
+
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
 private fun Feed() {
     val viewModel = viewModel<FeedViewModel>()
     val postLoadingState by viewModel.posts.collectAsState(initial = PostLoadingState.Loading)
-    when (postLoadingState) {
-        PostLoadingState.Loading -> LoadingFeed()
-        is PostLoadingState.Populated -> PopulatedFeed(
-            posts = (postLoadingState as PostLoadingState.Populated).posts
+    val currentScreen = when (postLoadingState) {
+        PostLoadingState.Loading -> FeedScreenShowing.Loading
+        is PostLoadingState.Populated -> FeedScreenShowing.Feed
+    }
+    Crossfade(
+        targetState = currentScreen,
+        animationSpec = tween(
+            durationMillis = 800
         )
+    ) { state ->
+        when (state) {
+            FeedScreenShowing.Loading -> LoadingFeed()
+            FeedScreenShowing.Feed -> PopulatedFeed(
+                posts = (postLoadingState as PostLoadingState.Populated).posts
+            )
+        }
     }
 }
 
