@@ -1,10 +1,7 @@
 package ru.aasmc.opinionator.ui.feed
 
 import android.util.FloatMath
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -108,7 +105,12 @@ private fun useLikeCountAnimation(likes: Int): LikeCountAnimation {
     state.targetState = LikeAnimationState.Finished
     val transition = updateTransition(state, "Like Count Transition")
 
-    val translation by transition.animateDp(label = "Translation") { animationState ->
+    val translation by transition.animateDp(
+        label = "Translation",
+        transitionSpec = {
+            spring(stiffness = Spring.StiffnessLow)
+        }
+    ) { animationState ->
         when (animationState) {
             LikeAnimationState.Started -> 0.dp
             LikeAnimationState.Finished -> (-16).dp
@@ -119,7 +121,12 @@ private fun useLikeCountAnimation(likes: Int): LikeCountAnimation {
         translation.toPx()
     }
 
-    val alpha by transition.animateFloat(label = "Alpha") { animationState ->
+    val alpha by transition.animateFloat(
+        label = "Alpha",
+        transitionSpec = {
+            spring(stiffness = Spring.StiffnessLow)
+        }
+    ) { animationState ->
         when (animationState) {
             LikeAnimationState.Started -> 1f
             LikeAnimationState.Finished -> 0f
