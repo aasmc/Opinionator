@@ -1,5 +1,6 @@
 package ru.aasmc.opinionator.ui.feed
 
+import android.util.FloatMath
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
@@ -71,11 +72,38 @@ private enum class LikeAnimationState {
 
 @Composable
 private fun LikeCount(post: Post) {
-    val state = remember(post.likes) {
-        MutableTransitionState(LikeAnimationState.Started)
-    }
     val previousLikeCount = remember {
         mutableStateOf(post.likes)
+    }
+
+    val likeCountAnimation = useLikeCountAnimation(likes = post.likes)
+    if (likeCountAnimation.finished) {
+        previousLikeCount.value = post.likes
+    }
+
+    Box(modifier = Modifier.padding(start = 4.dp)) {
+        Text(text = "${post.likes}")
+        Text(
+            text = "${previousLikeCount.value}",
+            modifier = Modifier
+                .graphicsLayer(
+                    translationY = likeCountAnimation.translation,
+                    alpha = likeCountAnimation.alpha
+                )
+        )
+    }
+}
+
+data class LikeCountAnimation(
+    val alpha: Float,
+    val translation: Float,
+    val finished: Boolean
+)
+
+@Composable
+private fun useLikeCountAnimation(likes: Int): LikeCountAnimation {
+    val state = remember(likes) {
+        MutableTransitionState(LikeAnimationState.Started)
     }
     state.targetState = LikeAnimationState.Finished
     val transition = updateTransition(state, "Like Count Transition")
@@ -97,21 +125,12 @@ private fun LikeCount(post: Post) {
             LikeAnimationState.Finished -> 0f
         }
     }
-    if (transition.currentState == transition.targetState) {
-        previousLikeCount.value = post.likes
-    }
-
-    Box(modifier = Modifier.padding(start = 4.dp)) {
-        Text(text = "${post.likes}")
-        Text(
-            text = "${previousLikeCount.value}",
-            modifier = Modifier
-                .graphicsLayer(
-                    translationY = translationPx,
-                    alpha = alpha
-                )
-        )
-    }
+    val isFinished = transition.currentState == transition.targetState
+    return LikeCountAnimation(
+        alpha = alpha,
+        translation = translationPx,
+        finished = isFinished
+    )
 }
 
 
