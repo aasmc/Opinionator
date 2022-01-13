@@ -1,16 +1,26 @@
 package ru.aasmc.opinionator.ui.feed
 
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,10 +48,7 @@ fun CommentBar(
                     viewModel.postLiked(post)
                 }
         )
-        Text(
-            text = "${post.likes}",
-            modifier = Modifier.padding(start = 4.dp)
-        )
+        LikeCount(post = post)
         Image(
             painter = painterResource(id = R.drawable.comment),
             contentDescription = "Comment",
@@ -57,7 +64,55 @@ fun CommentBar(
     }
 }
 
+private enum class LikeAnimationState {
+    Started,
+    Finished
+}
 
+@Composable
+private fun LikeCount(post: Post) {
+    val state = remember(post.likes) {
+        MutableTransitionState(LikeAnimationState.Started)
+    }
+    val previousLikeCount = remember {
+        mutableStateOf(post.likes)
+    }
+    state.targetState = LikeAnimationState.Finished
+    val transition = updateTransition(state, "Like Count Transition")
+
+    val translation by transition.animateDp(label = "Translation") { animationState ->
+        when (animationState) {
+            LikeAnimationState.Started -> 0.dp
+            LikeAnimationState.Finished -> (-16).dp
+        }
+    }
+
+    val translationPx = with(LocalDensity.current) {
+        translation.toPx()
+    }
+
+    val alpha by transition.animateFloat(label = "Alpha") { animationState ->
+        when (animationState) {
+            LikeAnimationState.Started -> 1f
+            LikeAnimationState.Finished -> 0f
+        }
+    }
+    if (transition.currentState == transition.targetState) {
+        previousLikeCount.value = post.likes
+    }
+
+    Box(modifier = Modifier.padding(start = 4.dp)) {
+        Text(text = "${post.likes}")
+        Text(
+            text = "${previousLikeCount.value}",
+            modifier = Modifier
+                .graphicsLayer(
+                    translationY = translationPx,
+                    alpha = alpha
+                )
+        )
+    }
+}
 
 
 
