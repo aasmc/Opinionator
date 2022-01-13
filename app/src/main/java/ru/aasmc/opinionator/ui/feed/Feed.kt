@@ -146,6 +146,9 @@ private fun Post(post: Post) {
 private fun PostBody(
     post: Post
 ) {
+    val heartAnimationState = remember {
+        mutableStateOf(HeartAnimationState.Hidden)
+    }
     Card(
         shape = RoundedCornerShape(4.dp),
         elevation = 8.dp,
@@ -159,8 +162,19 @@ private fun PostBody(
             ) {
                 Text(text = post.text)
                 ImagePager(images = post.attachedImages)
-                CommentBar(post = post)
+                CommentBar(
+                    post = post,
+                    onPostLiked = {
+                        heartAnimationState.value = if (post.hasBeenLiked) {
+                            HeartAnimationState.Hidden
+                        } else {
+                            HeartAnimationState.Shown
+                        }
+                    }
+                )
             }
+            HeartImage(heartAnimationState)
+
         }
     }
 }

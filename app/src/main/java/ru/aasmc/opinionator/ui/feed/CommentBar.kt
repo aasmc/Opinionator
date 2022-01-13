@@ -26,7 +26,8 @@ import java.util.*
 
 @Composable
 fun CommentBar(
-    post: Post
+    post: Post,
+    onPostLiked: () -> Unit = {}
 ) {
     val likeImage = if (post.hasBeenLiked) R.drawable.favorite else R.drawable.favorite_border
     val viewModel: FeedViewModel = viewModel()
@@ -43,6 +44,7 @@ fun CommentBar(
                 .size(16.dp)
                 .clickable {
                     viewModel.postLiked(post)
+                    onPostLiked()
                 }
         )
         LikeCount(post = post)
