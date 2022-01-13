@@ -1,10 +1,12 @@
 package ru.aasmc.opinionator.ui.feed
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
@@ -37,12 +39,15 @@ fun AddPost(
         ) {
             Text(
                 text = "Add your opinion here",
-                style = TextStyle(Color.White, fontWeight = FontWeight.Bold),
+                style = TextStyle(MaterialTheme.colors.secondary, fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            Card {
+            Card(
+                modifier = Modifier.animateContentSize()
+            ) {
                 TextField(
                     value = postText,
+                    textStyle = TextStyle(color =  MaterialTheme.colors.primary),
                     onValueChange = { value ->
                         postText = value
                     },
