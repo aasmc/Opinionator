@@ -1,13 +1,9 @@
 package ru.aasmc.opinionator.ui.feed
 
-import android.util.FloatMath
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,10 +16,13 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.aasmc.opinionator.R
 import ru.aasmc.opinionator.models.Post
+import ru.aasmc.opinionator.models.User
+import java.util.*
 
 @Composable
 fun CommentBar(
@@ -140,7 +139,24 @@ private fun useLikeCountAnimation(likes: Int): LikeCountAnimation {
     )
 }
 
-
+@Preview
+@Composable
+private fun LikeCountPreview() {
+    val post = Post(
+        UUID.randomUUID(),
+        "Test",
+        User(R.drawable.default_account, "Test"),
+        100, 100, false
+    )
+    Box(
+        modifier = Modifier
+            .width(200.dp)
+            .height(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        LikeCount(post = post)
+    }
+}
 
 
 

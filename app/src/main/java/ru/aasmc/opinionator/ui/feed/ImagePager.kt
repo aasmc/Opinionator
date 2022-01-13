@@ -1,17 +1,18 @@
 package ru.aasmc.opinionator.ui.feed
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.pager.*
+import kotlin.math.absoluteValue
+import androidx.compose.ui.util.lerp
 
 @ExperimentalPagerApi
 @Composable
@@ -36,6 +37,7 @@ fun ImagePager(
                         .fillMaxWidth()
                         .fillMaxHeight()
                         .padding(8.dp)
+                        .animatePageChange(this, page)
                 )
             }
             HorizontalPagerIndicator(
@@ -48,7 +50,27 @@ fun ImagePager(
     }
 }
 
+@ExperimentalPagerApi
+private fun Modifier.animatePageChange(pagerScope: PagerScope, page: Int): Modifier {
+    return this.graphicsLayer {
+        val pageOffset = pagerScope.calculateCurrentOffsetForPage(page).absoluteValue
+        val scale = lerp(
+            start = 0.85f,
+            stop = 1f,
+            fraction = 1f - pageOffset
+        )
 
+        val updateAlpha = lerp(
+            start = 0.5f,
+            stop = 1f,
+            fraction = 1f - pageOffset
+        )
+
+        scaleX = scale
+        scaleY = scale
+        alpha = updateAlpha
+    }
+}
 
 
 
