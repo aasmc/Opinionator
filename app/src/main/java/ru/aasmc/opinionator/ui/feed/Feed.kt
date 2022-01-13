@@ -1,5 +1,6 @@
 package ru.aasmc.opinionator.ui.feed
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -23,12 +24,14 @@ import ru.aasmc.opinionator.data.PostLoadingState
 import ru.aasmc.opinionator.models.Post
 import ru.aasmc.opinionator.models.User
 
+@ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
 fun FeedScreen() {
     Feed()
 }
 
+@ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
 private fun Feed() {
@@ -42,6 +45,7 @@ private fun Feed() {
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 @ExperimentalPagerApi
 private fun PopulatedFeed(
@@ -85,12 +89,13 @@ private fun PopulatedFeed(
                     item { Post(post = post) }
                 }
             }
-            if (isShowingPostInput) {
-                AddPost(onDoneClicked = {
+            AddPost(
+                show = isShowingPostInput,
+                onDoneClicked = {
                     isShowingPostInput = false
                     viewModel.addPost(it)
                 })
-            }
+
         }
     }
 }
