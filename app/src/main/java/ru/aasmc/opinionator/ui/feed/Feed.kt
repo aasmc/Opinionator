@@ -1,5 +1,6 @@
 package ru.aasmc.opinionator.ui.feed
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -35,7 +37,8 @@ private fun Feed() {
     when (postLoadingState) {
         PostLoadingState.Loading -> LoadingFeed()
         is PostLoadingState.Populated -> PopulatedFeed(
-            posts = (postLoadingState as PostLoadingState.Populated).posts)
+            posts = (postLoadingState as PostLoadingState.Populated).posts
+        )
     }
 }
 
@@ -47,8 +50,10 @@ private fun PopulatedFeed(
     var isShowingPostInput by remember {
         mutableStateOf(false)
     }
-    val addPostIcon = if (isShowingPostInput) R.drawable.close else R.drawable.add
     val viewModel: FeedViewModel = viewModel()
+    val rotationAnimation = animateFloatAsState(
+        targetValue = if (isShowingPostInput) 405f else 0f
+    )
 
     Scaffold(
         floatingActionButton = {
@@ -56,8 +61,9 @@ private fun PopulatedFeed(
                 onClick = { isShowingPostInput = !isShowingPostInput }
             ) {
                 Icon(
-                    painter = painterResource(id = addPostIcon),
-                    contentDescription = "Add post"
+                    painter = painterResource(id = R.drawable.add),
+                    contentDescription = "Add post",
+                    modifier = Modifier.graphicsLayer(rotationZ = rotationAnimation.value)
                 )
             }
         }
